@@ -5,6 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 
+using System.IO;
 using GameFramework;
 using UnityEditor;
 using UnityEngine;
@@ -16,8 +17,10 @@ namespace StarForce.Editor.DataTableTools
         [MenuItem("Star Force/Generate DataTables")]
         private static void GenerateDataTables()
         {
-            foreach (string dataTableName in ProcedurePreload.DataTableNames)
+            var files = Directory.GetFiles(Application.dataPath + "/GameMain/DataTables", "*.txt");
+            foreach (var file in files)
             {
+                var dataTableName = Path.GetFileNameWithoutExtension(file);
                 DataTableProcessor dataTableProcessor = DataTableGenerator.CreateDataTableProcessor(dataTableName);
                 if (!DataTableGenerator.CheckRawData(dataTableProcessor, dataTableName))
                 {
