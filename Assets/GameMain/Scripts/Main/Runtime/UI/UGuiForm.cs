@@ -23,18 +23,11 @@ namespace StarForce
         private CanvasGroup m_CanvasGroup = null;
         private List<Canvas> m_CachedCanvasContainer = new List<Canvas>();
 
-        public int OriginalDepth
-        {
-            get;
-            private set;
-        }
+        public int OriginalDepth { get; private set; }
 
         public int Depth
         {
-            get
-            {
-                return m_CachedCanvas.sortingOrder;
-            }
+            get { return m_CachedCanvas.sortingOrder; }
         }
 
         public void Close()
@@ -48,7 +41,7 @@ namespace StarForce
 
             if (ignoreFade)
             {
-                GameEntry.UI.CloseUIForm(this);
+                GameEntryMain.UI.CloseUIForm(this);
             }
             else
             {
@@ -58,7 +51,7 @@ namespace StarForce
 
         public void PlayUISound(int uiSoundId)
         {
-            GameEntry.Sound.PlayUISound(uiSoundId);
+            // GameEntryMain.Sound.PlayUISound(uiSoundId);
         }
 
         public static void SetMainFont(Font mainFont)
@@ -100,7 +93,7 @@ namespace StarForce
                 texts[i].font = s_MainFont;
                 if (!string.IsNullOrEmpty(texts[i].text))
                 {
-                    texts[i].text = GameEntry.Localization.GetString(texts[i].text);
+                    texts[i].text = GameEntryMain.Localization.GetString(texts[i].text);
                 }
             }
         }
@@ -202,7 +195,8 @@ namespace StarForce
         {
             int oldDepth = Depth;
             base.OnDepthChanged(uiGroupDepth, depthInUIGroup);
-            int deltaDepth = UGuiGroupHelper.DepthFactor * uiGroupDepth + DepthFactor * depthInUIGroup - oldDepth + OriginalDepth;
+            int deltaDepth = UGuiGroupHelper.DepthFactor * uiGroupDepth + DepthFactor * depthInUIGroup - oldDepth +
+                             OriginalDepth;
             GetComponentsInChildren(true, m_CachedCanvasContainer);
             for (int i = 0; i < m_CachedCanvasContainer.Count; i++)
             {
@@ -215,7 +209,7 @@ namespace StarForce
         private IEnumerator CloseCo(float duration)
         {
             yield return m_CanvasGroup.FadeToAlpha(0f, duration);
-            GameEntry.UI.CloseUIForm(this);
+            GameEntryMain.UI.CloseUIForm(this);
         }
     }
 }

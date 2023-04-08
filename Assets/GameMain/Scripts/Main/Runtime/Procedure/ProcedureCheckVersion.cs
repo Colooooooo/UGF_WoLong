@@ -36,17 +36,17 @@ namespace StarForce
             m_NeedUpdateVersion = false;
             m_VersionInfo = null;
 
-            GameEntry.Event.Subscribe(WebRequestSuccessEventArgs.EventId, OnWebRequestSuccess);
-            GameEntry.Event.Subscribe(WebRequestFailureEventArgs.EventId, OnWebRequestFailure);
+            GameEntryMain.Event.Subscribe(WebRequestSuccessEventArgs.EventId, OnWebRequestSuccess);
+            GameEntryMain.Event.Subscribe(WebRequestFailureEventArgs.EventId, OnWebRequestFailure);
 
             // 向服务器请求版本信息
-            GameEntry.WebRequest.AddWebRequest(Utility.Text.Format(GameEntry.BuiltinData.BuildInfo.CheckVersionUrl, GetPlatformPath()), this);
+            GameEntryMain.WebRequest.AddWebRequest(Utility.Text.Format(GameEntryMain.BuiltinData.BuildInfo.CheckVersionUrl, GetPlatformPath()), this);
         }
 
         protected override void OnLeave(ProcedureOwner procedureOwner, bool isShutdown)
         {
-            GameEntry.Event.Unsubscribe(WebRequestSuccessEventArgs.EventId, OnWebRequestSuccess);
-            GameEntry.Event.Unsubscribe(WebRequestFailureEventArgs.EventId, OnWebRequestFailure);
+            GameEntryMain.Event.Unsubscribe(WebRequestSuccessEventArgs.EventId, OnWebRequestSuccess);
+            GameEntryMain.Event.Unsubscribe(WebRequestFailureEventArgs.EventId, OnWebRequestFailure);
 
             base.OnLeave(procedureOwner, isShutdown);
         }
@@ -78,13 +78,13 @@ namespace StarForce
         {
             string url = null;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            url = GameEntry.BuiltinData.BuildInfo.WindowsAppUrl;
+            url = GameEntryMain.BuiltinData.BuildInfo.WindowsAppUrl;
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            url = GameEntry.BuiltinData.BuildInfo.MacOSAppUrl;
+            url = GameEntryMain.BuiltinData.BuildInfo.MacOSAppUrl;
 #elif UNITY_IOS
-            url = GameEntry.BuiltinData.BuildInfo.IOSAppUrl;
+            url = GameEntryMain.BuiltinData.BuildInfo.IOSAppUrl;
 #elif UNITY_ANDROID
-            url = GameEntry.BuiltinData.BuildInfo.AndroidAppUrl;
+            url = GameEntryMain.BuiltinData.BuildInfo.AndroidAppUrl;
 #endif
             if (!string.IsNullOrEmpty(url))
             {
@@ -115,14 +115,14 @@ namespace StarForce
             if (m_VersionInfo.ForceUpdateGame)
             {
                 // 需要强制更新游戏应用
-                GameEntry.UI.OpenDialog(new DialogParams
+                GameEntryMain.UI.OpenDialog(new DialogParams
                 {
                     Mode = 2,
-                    Title = GameEntry.Localization.GetString("ForceUpdate.Title"),
-                    Message = GameEntry.Localization.GetString("ForceUpdate.Message"),
-                    ConfirmText = GameEntry.Localization.GetString("ForceUpdate.UpdateButton"),
+                    Title = GameEntryMain.Localization.GetString("ForceUpdate.Title"),
+                    Message = GameEntryMain.Localization.GetString("ForceUpdate.Message"),
+                    ConfirmText = GameEntryMain.Localization.GetString("ForceUpdate.UpdateButton"),
                     OnClickConfirm = GotoUpdateApp,
-                    CancelText = GameEntry.Localization.GetString("ForceUpdate.QuitButton"),
+                    CancelText = GameEntryMain.Localization.GetString("ForceUpdate.QuitButton"),
                     OnClickCancel = delegate (object userData) { UnityGameFramework.Runtime.GameEntry.Shutdown(ShutdownType.Quit); },
                 });
 
@@ -130,10 +130,10 @@ namespace StarForce
             }
 
             // 设置资源更新下载地址
-            GameEntry.Resource.UpdatePrefixUri = Utility.Path.GetRegularPath(m_VersionInfo.UpdatePrefixUri);
+            GameEntryMain.Resource.UpdatePrefixUri = Utility.Path.GetRegularPath(m_VersionInfo.UpdatePrefixUri);
 
             m_CheckVersionComplete = true;
-            m_NeedUpdateVersion = GameEntry.Resource.CheckVersionList(m_VersionInfo.InternalResourceVersion) == CheckVersionListResult.NeedUpdate;
+            m_NeedUpdateVersion = GameEntryMain.Resource.CheckVersionList(m_VersionInfo.InternalResourceVersion) == CheckVersionListResult.NeedUpdate;
         }
 
         private void OnWebRequestFailure(object sender, GameEventArgs e)

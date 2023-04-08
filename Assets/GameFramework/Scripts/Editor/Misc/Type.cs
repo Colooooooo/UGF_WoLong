@@ -22,6 +22,8 @@ namespace UnityGameFramework.Editor
             "UnityGameFramework.Runtime",
 #endif
             "Assembly-CSharp",
+            "Hotfix.Runtime",
+            "Main.Runtime",
         };
 
         private static readonly string[] RuntimeOrEditorAssemblyNames =

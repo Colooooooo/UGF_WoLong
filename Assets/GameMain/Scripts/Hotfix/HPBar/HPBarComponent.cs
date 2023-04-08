@@ -36,7 +36,7 @@ namespace StarForce
             }
 
             m_CachedCanvas = m_HPBarInstanceRoot.GetComponent<Canvas>();
-            m_HPBarItemObjectPool = GameEntry.ObjectPool.CreateSingleSpawnObjectPool<HPBarItemObject>("HPBarItem", m_InstancePoolCapacity);
+            m_HPBarItemObjectPool = GameEntryMain.ObjectPool.CreateSingleSpawnObjectPool<HPBarItemObject>("HPBarItem", m_InstancePoolCapacity);
             m_ActiveHPBarItems = new List<HPBarItem>();
         }
 

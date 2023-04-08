@@ -20,21 +20,21 @@ namespace StarForce
         {
             base.OnEnter(procedureOwner);
 
-            GameEntry.Event.Subscribe(ResourceVerifyStartEventArgs.EventId, OnResourceVerifyStart);
-            GameEntry.Event.Subscribe(ResourceVerifySuccessEventArgs.EventId, OnResourceVerifySuccess);
-            GameEntry.Event.Subscribe(ResourceVerifyFailureEventArgs.EventId, OnResourceVerifyFailure);
+            GameEntryMain.Event.Subscribe(ResourceVerifyStartEventArgs.EventId, OnResourceVerifyStart);
+            GameEntryMain.Event.Subscribe(ResourceVerifySuccessEventArgs.EventId, OnResourceVerifySuccess);
+            GameEntryMain.Event.Subscribe(ResourceVerifyFailureEventArgs.EventId, OnResourceVerifyFailure);
 
             m_VerifyResourcesComplete = false;
-            GameEntry.Resource.VerifyResources(OnVerifyResourcesComplete);
+            GameEntryMain.Resource.VerifyResources(OnVerifyResourcesComplete);
         }
 
         protected override void OnLeave(ProcedureOwner procedureOwner, bool isShutdown)
         {
             base.OnLeave(procedureOwner, isShutdown);
 
-            GameEntry.Event.Unsubscribe(ResourceVerifyStartEventArgs.EventId, OnResourceVerifyStart);
-            GameEntry.Event.Unsubscribe(ResourceVerifySuccessEventArgs.EventId, OnResourceVerifySuccess);
-            GameEntry.Event.Unsubscribe(ResourceVerifyFailureEventArgs.EventId, OnResourceVerifyFailure);
+            GameEntryMain.Event.Unsubscribe(ResourceVerifyStartEventArgs.EventId, OnResourceVerifyStart);
+            GameEntryMain.Event.Unsubscribe(ResourceVerifySuccessEventArgs.EventId, OnResourceVerifySuccess);
+            GameEntryMain.Event.Unsubscribe(ResourceVerifyFailureEventArgs.EventId, OnResourceVerifyFailure);
         }
 
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)

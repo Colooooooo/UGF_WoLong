@@ -37,21 +37,21 @@ namespace StarForce
             m_UpdateLengthData.Clear();
             m_UpdateResourceForm = null;
 
-            GameEntry.Event.Subscribe(ResourceUpdateStartEventArgs.EventId, OnResourceUpdateStart);
-            GameEntry.Event.Subscribe(ResourceUpdateChangedEventArgs.EventId, OnResourceUpdateChanged);
-            GameEntry.Event.Subscribe(ResourceUpdateSuccessEventArgs.EventId, OnResourceUpdateSuccess);
-            GameEntry.Event.Subscribe(ResourceUpdateFailureEventArgs.EventId, OnResourceUpdateFailure);
+            GameEntryMain.Event.Subscribe(ResourceUpdateStartEventArgs.EventId, OnResourceUpdateStart);
+            GameEntryMain.Event.Subscribe(ResourceUpdateChangedEventArgs.EventId, OnResourceUpdateChanged);
+            GameEntryMain.Event.Subscribe(ResourceUpdateSuccessEventArgs.EventId, OnResourceUpdateSuccess);
+            GameEntryMain.Event.Subscribe(ResourceUpdateFailureEventArgs.EventId, OnResourceUpdateFailure);
 
             if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
             {
-                GameEntry.UI.OpenDialog(new DialogParams
+                GameEntryMain.UI.OpenDialog(new DialogParams
                 {
                     Mode = 2,
-                    Title = GameEntry.Localization.GetString("UpdateResourceViaCarrierDataNetwork.Title"),
-                    Message = GameEntry.Localization.GetString("UpdateResourceViaCarrierDataNetwork.Message"),
-                    ConfirmText = GameEntry.Localization.GetString("UpdateResourceViaCarrierDataNetwork.UpdateButton"),
+                    Title = GameEntryMain.Localization.GetString("UpdateResourceViaCarrierDataNetwork.Title"),
+                    Message = GameEntryMain.Localization.GetString("UpdateResourceViaCarrierDataNetwork.Message"),
+                    ConfirmText = GameEntryMain.Localization.GetString("UpdateResourceViaCarrierDataNetwork.UpdateButton"),
                     OnClickConfirm = StartUpdateResources,
-                    CancelText = GameEntry.Localization.GetString("UpdateResourceViaCarrierDataNetwork.QuitButton"),
+                    CancelText = GameEntryMain.Localization.GetString("UpdateResourceViaCarrierDataNetwork.QuitButton"),
                     OnClickCancel = delegate (object userData) { UnityGameFramework.Runtime.GameEntry.Shutdown(ShutdownType.Quit); },
                 });
 
@@ -69,10 +69,10 @@ namespace StarForce
                 m_UpdateResourceForm = null;
             }
 
-            GameEntry.Event.Unsubscribe(ResourceUpdateStartEventArgs.EventId, OnResourceUpdateStart);
-            GameEntry.Event.Unsubscribe(ResourceUpdateChangedEventArgs.EventId, OnResourceUpdateChanged);
-            GameEntry.Event.Unsubscribe(ResourceUpdateSuccessEventArgs.EventId, OnResourceUpdateSuccess);
-            GameEntry.Event.Unsubscribe(ResourceUpdateFailureEventArgs.EventId, OnResourceUpdateFailure);
+            GameEntryMain.Event.Unsubscribe(ResourceUpdateStartEventArgs.EventId, OnResourceUpdateStart);
+            GameEntryMain.Event.Unsubscribe(ResourceUpdateChangedEventArgs.EventId, OnResourceUpdateChanged);
+            GameEntryMain.Event.Unsubscribe(ResourceUpdateSuccessEventArgs.EventId, OnResourceUpdateSuccess);
+            GameEntryMain.Event.Unsubscribe(ResourceUpdateFailureEventArgs.EventId, OnResourceUpdateFailure);
 
             base.OnLeave(procedureOwner, isShutdown);
         }
@@ -86,18 +86,18 @@ namespace StarForce
                 return;
             }
 
-            ChangeState<ProcedurePreload>(procedureOwner);
+            ChangeState<ProcedureLoadAssembly>(procedureOwner);
         }
 
         private void StartUpdateResources(object userData)
         {
             if (m_UpdateResourceForm == null)
             {
-                m_UpdateResourceForm = Object.Instantiate(GameEntry.BuiltinData.UpdateResourceFormTemplate);
+                m_UpdateResourceForm = Object.Instantiate(GameEntryMain.BuiltinData.UpdateResourceFormTemplate);
             }
 
             Log.Info("Start update resources...");
-            GameEntry.Resource.UpdateResources(OnUpdateResourcesComplete);
+            GameEntryMain.Resource.UpdateResources(OnUpdateResourcesComplete);
         }
 
         private void RefreshProgress()
@@ -109,7 +109,7 @@ namespace StarForce
             }
 
             float progressTotal = (float)currentTotalUpdateLength / m_UpdateTotalCompressedLength;
-            string descriptionText = GameEntry.Localization.GetString("UpdateResource.Tips", m_UpdateSuccessCount.ToString(), m_UpdateCount.ToString(), GetByteLengthString(currentTotalUpdateLength), GetByteLengthString(m_UpdateTotalCompressedLength), progressTotal, GetByteLengthString((int)GameEntry.Download.CurrentSpeed));
+            string descriptionText = GameEntryMain.Localization.GetString("UpdateResource.Tips", m_UpdateSuccessCount.ToString(), m_UpdateCount.ToString(), GetByteLengthString(currentTotalUpdateLength), GetByteLengthString(m_UpdateTotalCompressedLength), progressTotal, GetByteLengthString((int)GameEntryMain.Download.CurrentSpeed));
             m_UpdateResourceForm.SetProgress(progressTotal, descriptionText);
         }
 
