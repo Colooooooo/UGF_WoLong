@@ -25,7 +25,7 @@ namespace StarForce.Editor
             ".txt", ".meta", ".unity", ".json"
         };
 
-        [MenuItem("Edit/Unlock Script _F6")]
+        // [MenuItem("Edit/Unlock Script _F6")]
         public static void UnlockScript()
         {
             foreach (var forder in filterFileList)
