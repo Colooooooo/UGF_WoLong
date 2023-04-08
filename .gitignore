@@ -3,8 +3,10 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/[Hh]ybridCLRData/
 /Assets/AssetStoreTools*
 /.vs/
+/.idea/
 
 *.csproj
 *.unityproj
