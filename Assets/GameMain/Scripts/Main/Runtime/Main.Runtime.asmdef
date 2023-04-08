@@ -2,7 +2,8 @@
     "name": "Main.Runtime",
     "references": [
         "GUID:cb24a677eed03be4d9fac0bf2ce2d2c6",
-        "GUID:363c5eb08ff8e6a439b85e37b8c20d96"
+        "GUID:363c5eb08ff8e6a439b85e37b8c20d96",
+        "GUID:13ba8ce62aa80c74598530029cb2d649"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

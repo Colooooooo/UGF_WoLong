@@ -13,7 +13,7 @@ namespace StarForce
     /// <summary>
     /// 游戏入口。
     /// </summary>
-    public partial class GameEntry : MonoBehaviour
+    public partial class GameEntry
     {
         /// <summary>
         /// 获取游戏基础组件。
