@@ -23,5 +23,4 @@
 /Assets/StreamingAssets/*
 !/Assets/StreamingAssets/.gitkeep
 /ProjectSettings/ProjectVersion.txt
-/Packages/*
 /UnityPackageManager/*
