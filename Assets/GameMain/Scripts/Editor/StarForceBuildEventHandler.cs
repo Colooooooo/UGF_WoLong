@@ -91,10 +91,10 @@ namespace StarForce.Editor
             File.WriteAllText(savePath,versionJson);
             Debug.Log("Version.txt save success!!!");
             
-            if (platform != Platform.Windows)
-            {
-                return;
-            }
+            // if (platform != Platform.Windows)
+            // {
+            //     return;
+            // }
 
             string streamingAssetsPath = Utility.Path.GetRegularPath(Path.Combine(Application.dataPath, "StreamingAssets"));
             string[] fileNames = Directory.GetFiles(outputPackagePath, "*", SearchOption.AllDirectories);
@@ -109,6 +109,7 @@ namespace StarForce.Editor
 
                 File.Copy(fileName, destFileName);
             }
+            Debug.Log("Copy Package to StreamingAsset success!!!");
         }
     }
 }

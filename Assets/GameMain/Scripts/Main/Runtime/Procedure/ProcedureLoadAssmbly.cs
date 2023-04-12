@@ -42,55 +42,65 @@ namespace StarForce
         {
             base.OnEnter(procedureOwner);
             LoadDllSuccess = false;
-            foreach (var fileName in HotfixAssemblyFiles)
+            if (!GameEntryMain.Base.EditorResourceMode)
             {
-                GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAsset(fileName), Constant.AssetPriority.DLLAsset,
-                    new LoadAssetCallbacks(
-                        (assetName, asset, duration, userData) =>
-                        {
-                            var textAsset = asset as TextAsset;
-                            m_HotfixAssembly = Assembly.Load(textAsset.bytes);
-                            LoadDllSuccess = true;
-                            Debug.Log("加载成功：" + fileName);
-                        },
-                        (assetName, status, errorMessage, userData) =>
-                        {
-                            Debug.LogErrorFormat("Can not load file '{0}' from '{1}' with error message '{2}'.",
-                                fileName,
-                                assetName, errorMessage);
-                        }));
+                foreach (var fileName in HotfixAssemblyFiles)
+                {
+                    GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAsset(fileName),
+                        Constant.AssetPriority.DLLAsset,
+                        new LoadAssetCallbacks(
+                            (assetName, asset, duration, userData) =>
+                            {
+                                Debug.Log("加载成功：" + fileName);
+
+                                var textAsset = asset as TextAsset;
+                                m_HotfixAssembly = Assembly.Load(textAsset.bytes);
+                                LoadDllSuccess = true;
+                            },
+                            (assetName, status, errorMessage, userData) =>
+                            {
+                                Debug.LogErrorFormat("Can not load file '{0}' from '{1}' with error message '{2}'.",
+                                    fileName,
+                                    assetName, errorMessage);
+                            }));
+                }
+            }
+            else
+            {
+                m_HotfixAssembly = Assembly.Load("Hotfix.Runtime");
+                LoadDllSuccess = true;
             }
         }
-
+        
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
             if (LoadDllSuccess)
             {
                 LoadDllSuccess = false;
-                AllAsmLoadComplete();
+                if (null == m_HotfixAssembly)
+                {
+                    Debug.LogError("Main logic assembly missing.");
+                    return;
+                }
+
+                StartGameEntry(m_HotfixAssembly);
             }
         }
 
-        private void AllAsmLoadComplete()
+        void StartGameEntry(Assembly assembly)
         {
-            if (null == m_HotfixAssembly)
-            {
-                Debug.LogError("Main logic assembly missing.");
-                return;
-            }
-
-            var appType = m_HotfixAssembly.GetType("StarForce.GameEntry");
+            var appType = assembly.GetType("StarForce.GameEntry");
             if (null == appType)
             {
-                Debug.LogError("Main logic type 'AppMain' missing.");
+                Debug.LogError("Hotfix.dll type 'GameEntry' missing.");
                 return;
             }
 
             var entryMethod = appType.GetMethod("Start");
             if (null == entryMethod)
             {
-                Debug.LogError("Main logic entry method 'Entrance' missing.");
+                Debug.LogError("StarForce.GameEntry method 'Start' missing.");
                 return;
             }
 

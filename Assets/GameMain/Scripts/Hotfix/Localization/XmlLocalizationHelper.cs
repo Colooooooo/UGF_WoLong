@@ -27,7 +27,7 @@ namespace StarForce
         {
             try
             {
-                string currentLanguage = GameEntry.Localization.Language.ToString();
+                string currentLanguage = GameEntryMain.Localization.Language.ToString();
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(dictionaryString);
                 XmlNode xmlRoot = xmlDocument.SelectSingleNode("Dictionaries");
