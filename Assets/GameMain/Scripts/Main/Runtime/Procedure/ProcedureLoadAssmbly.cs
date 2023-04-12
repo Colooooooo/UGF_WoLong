@@ -32,6 +32,13 @@ namespace StarForce
 
         private bool LoadDllSuccess;
         private Assembly m_HotfixAssembly;
+        private int m_Loaded = 0;
+        private static Dictionary<string, byte[]> s_assetDatas = new Dictionary<string, byte[]>();
+
+        public static byte[] GetAssetData(string dllName)
+        {
+            return s_assetDatas[dllName];
+        }
 
         public override bool UseNativeDialog
         {
@@ -44,9 +51,13 @@ namespace StarForce
             LoadDllSuccess = false;
             if (!GameEntryMain.Base.EditorResourceMode)
             {
-                foreach (var fileName in HotfixAssemblyFiles)
+                var Loadfiles = new List<string>();
+                Loadfiles.AddRange(AotMetaAssemblyFiles);
+                Loadfiles.AddRange(HotfixAssemblyFiles);
+                m_Loaded = 0;
+                foreach (var fileName in Loadfiles)
                 {
-                    GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAsset(fileName),
+                    GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAssembly(fileName),
                         Constant.AssetPriority.DLLAsset,
                         new LoadAssetCallbacks(
                             (assetName, asset, duration, userData) =>
@@ -54,8 +65,13 @@ namespace StarForce
                                 Debug.Log("加载成功：" + fileName);
 
                                 var textAsset = asset as TextAsset;
-                                m_HotfixAssembly = Assembly.Load(textAsset.bytes);
-                                LoadDllSuccess = true;
+                                s_assetDatas.Add(fileName, textAsset.bytes);
+
+                                m_Loaded++;
+                                if (m_Loaded == Loadfiles.Count)
+                                {
+                                    LoadDllSuccess = true;
+                                }
                             },
                             (assetName, status, errorMessage, userData) =>
                             {
@@ -71,21 +87,44 @@ namespace StarForce
                 LoadDllSuccess = true;
             }
         }
-        
+
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
             if (LoadDllSuccess)
             {
                 LoadDllSuccess = false;
+
+                LoadMetadataForAOTAssemblies();
+                m_HotfixAssembly = Assembly.Load(GetAssetData("Hotfix.Runtime.dll"));
+
                 if (null == m_HotfixAssembly)
                 {
-                    Debug.LogError("Main logic assembly missing.");
+                    Debug.LogError("Hotfix logic assembly missing.");
                     return;
                 }
 
-                StartGameEntry(m_HotfixAssembly);
+                StartGameEntry();
             }
+        }
+
+        void StartGameEntry()
+        {
+            GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixPrefab("GameEntry"), typeof(GameObject),
+                Constant.AssetPriority.DLLAsset,
+                new LoadAssetCallbacks(
+                    (assetName, asset, duration, userData) =>
+                    {
+                        Debug.Log("加载成功：GameEntry");
+                        GameObject hotfixEntry = GameObject.Instantiate(asset as GameObject);
+                        hotfixEntry.transform.SetParent(GameEntryMain.Base.transform.parent);
+                    },
+                    (assetName, status, errorMessage, userData) =>
+                    {
+                        Debug.LogErrorFormat("Can not load file '{0}' from '{1}' with error message '{2}'.",
+                            assetName,
+                            assetName, errorMessage);
+                    }));
         }
 
         void StartGameEntry(Assembly assembly)
@@ -119,10 +158,10 @@ namespace StarForce
             HomologousImageMode mode = HomologousImageMode.SuperSet;
             foreach (var aotDllName in AotMetaAssemblyFiles)
             {
-                // byte[] dllBytes = BetterStreamingAssets.ReadAllBytes(aotDllName + ".bytes");
-                // // 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码
-                // LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes, mode);
-                // Debug.Log($"LoadMetadataForAOTAssembly:{aotDllName}. mode:{mode} ret:{err}");
+                byte[] dllBytes = GetAssetData(aotDllName);
+                // 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码
+                LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes, mode);
+                Debug.Log($"LoadMetadataForAOTAssembly:{aotDllName}. mode:{mode} ret:{err}");
             }
         }
     }

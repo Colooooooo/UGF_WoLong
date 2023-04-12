@@ -21,10 +21,7 @@ public static class TypeUtils
     /// <returns>指定基类的所有子类的名称。</returns>
     public static string[] GetRuntimeTypeNames(System.Type typeBase, List<Assembly> assemblys) 
     {
-        string[] runtimeAssemblyNames = new string[] { "Main.Runtime" };
-        //string assemblyName = "HotfixFramework.Runtime";
         List<string> typeNames = new List<string>();
-        typeNames.AddRange(GetTypeNames(typeBase, runtimeAssemblyNames));
         typeNames.AddRange(GetTypeNames(typeBase, assemblys));
         return typeNames.ToArray();
     }

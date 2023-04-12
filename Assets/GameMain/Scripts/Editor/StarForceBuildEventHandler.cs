@@ -16,7 +16,7 @@ namespace StarForce.Editor
 {
     public sealed class StarForceBuildEventHandler : IBuildEventHandler
     {
-        private const string UpdateURL = "http://192.168.3.29/Full";
+        private const string UpdateURL = "http://192.168.0.95/Full";
         private static string OutPutDirectory { get; set; }
         private static VersionInfo m_VersionInfo = new VersionInfo();
         
@@ -45,6 +45,9 @@ namespace StarForce.Editor
             }
 
             Utility.Path.RemoveEmptyDirectory(streamingAssetsPath);
+            
+            //生成Hotfix.dll
+            HotfixGeneratorMenu.GeneratorHotfix();
             
             //赋值Version需要参数
             m_VersionInfo.LatestGameVersion = applicableGameVersion;

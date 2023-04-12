@@ -31,9 +31,14 @@ namespace StarForce
             return Utility.Text.Format("Assets/GameMain/Fonts/{0}.ttf", assetName);
         }
 
-        public static string GetHotfixAsset(string assetName)
+        public static string GetHotfixAssembly(string assetName)
         {
             return Utility.Text.Format("Assets/GameMain/Hotfix/{0}.bytes", assetName);
+        }
+        
+        public static string GetHotfixPrefab(string assetName)
+        {
+            return Utility.Text.Format("Assets/GameMain/Hotfix/{0}.prefab", assetName);
         }
         
         public static string GetSceneAsset(string assetName)

@@ -10,8 +10,8 @@ public class HotfixGeneratorMenu : MonoBehaviour
 {
     private const string HotfixAssetPath = "GameMain/Hotfix";
 
-    [MenuItem("HybridCLR/Build/Build Hotfix")]
-    private static void GeneratorHotfix()
+    [MenuItem("HybridCLR/Build/Build Hotfix.dll")]
+    public static void GeneratorHotfix()
     {
         BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
         CompileDllCommand.CompileDll(target);
@@ -21,16 +21,19 @@ public class HotfixGeneratorMenu : MonoBehaviour
 
     private static void CopyToAsset()
     {
-        CopyAOTAssembliesToStreamingAssets();
-        CopyHotUpdateAssembliesToStreamingAssets();
+        CopyAOTAssembliesToAssets();
+        CopyHotUpdateAssembliesToAssets();
     }
 
-    public static void CopyAOTAssembliesToStreamingAssets()
+    public static void CopyAOTAssembliesToAssets()
     {
         var target = EditorUserBuildSettings.activeBuildTarget;
         string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
         string aotAssembliesDstDir = Path.Combine(Application.dataPath, HotfixAssetPath);
-
+        if (!Directory.Exists(aotAssembliesDstDir))
+        {
+            Directory.CreateDirectory(aotAssembliesDstDir);
+        }
         foreach (var dll in SettingsUtil.AOTAssemblyNames)
         {
             string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
@@ -46,13 +49,16 @@ public class HotfixGeneratorMenu : MonoBehaviour
         }
     }
 
-    public static void CopyHotUpdateAssembliesToStreamingAssets()
+    public static void CopyHotUpdateAssembliesToAssets()
     {
         var target = EditorUserBuildSettings.activeBuildTarget;
 
         string hotfixDllSrcDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
         string hotfixAssembliesDstDir = Path.Combine(Application.dataPath, HotfixAssetPath);
-
+        if (!Directory.Exists(hotfixAssembliesDstDir))
+        {
+            Directory.CreateDirectory(hotfixAssembliesDstDir);
+        }
         foreach (var dll in SettingsUtil.HotUpdateAssemblyFilesExcludePreserved)
         {
             string dllPath = $"{hotfixDllSrcDir}/{dll}";

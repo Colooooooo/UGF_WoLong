@@ -57,7 +57,7 @@ namespace StarForce
             }
             else
             {
-                uiComponent.OpenUIForm("DialogForm", "Default", dialogParams);
+                uiComponent.OpenUIForm(AssetUtility.GetUIFormAsset("DialogForm"), "Default", dialogParams);
             }
         }
 
