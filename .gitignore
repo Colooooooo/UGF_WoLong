@@ -5,6 +5,7 @@
 /[Bb]uilds/
 /[Hh]ybridCLRData/
 /[Aa]ssetPackage/
+/[Oo]ut/
 /Assets/AssetStoreTools*
 /.vs/
 /.idea/
