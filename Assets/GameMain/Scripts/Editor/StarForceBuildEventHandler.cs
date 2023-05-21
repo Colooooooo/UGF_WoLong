@@ -47,7 +47,9 @@ namespace StarForce.Editor
             Utility.Path.RemoveEmptyDirectory(streamingAssetsPath);
             
             //生成Hotfix.dll
+#if HybridCLR
             HotfixGeneratorMenu.GeneratorHotfix();
+#endif
             
             //赋值Version需要参数
             m_VersionInfo.LatestGameVersion = applicableGameVersion;

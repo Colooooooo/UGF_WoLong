@@ -5,37 +5,53 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-using GameFramework;
 using GameFramework.Resource;
-using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
-using HybridCLR;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
+using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
+#if !HybridCLR
 namespace StarForce
 {
     public class ProcedureLoadAssembly : ProcedureBase
     {
-        static List<string> AotMetaAssemblyFiles = new List<string>()
+        public override bool UseNativeDialog { get; }
+
+        protected override void OnEnter(ProcedureOwner procedureOwner)
+        {
+            base.OnEnter(procedureOwner);
+            Debug.LogWarning("开启热更请导入HybridCLR");
+        }
+    }
+}
+
+#else
+using HybridCLR;
+namespace GT.Main
+{
+    public class ProcedureLoadAssembly : ProcedureBase
+    {
+        static List<string> AotMetaAssemblyFiles = new()
         {
             "mscorlib.dll",
             "System.dll",
             "System.Core.dll",
+            "UniRx.dll",
+            "UniTask.dll",
         };
 
-        static List<string> HotfixAssemblyFiles = new List<string>()
+        static List<string> HotfixAssemblyFiles = new()
         {
             "Hotfix.Runtime.dll",
         };
 
         private bool LoadDllSuccess;
         private Assembly m_HotfixAssembly;
-        private int m_Loaded = 0;
-        private static Dictionary<string, byte[]> s_assetDatas = new Dictionary<string, byte[]>();
-
-        public static byte[] GetAssetData(string dllName)
+        private int m_Loaded;
+        
+        private Dictionary<string, byte[]> s_assetDatas = new();
+        public byte[] GetAssetData(string dllName)
         {
             return s_assetDatas[dllName];
         }
@@ -48,43 +64,14 @@ namespace StarForce
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             base.OnEnter(procedureOwner);
-            LoadDllSuccess = false;
             if (!GameEntryMain.Base.EditorResourceMode)
             {
-                var Loadfiles = new List<string>();
-                Loadfiles.AddRange(AotMetaAssemblyFiles);
-                Loadfiles.AddRange(HotfixAssemblyFiles);
-                m_Loaded = 0;
-                foreach (var fileName in Loadfiles)
-                {
-                    GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAssembly(fileName),
-                        Constant.AssetPriority.DLLAsset,
-                        new LoadAssetCallbacks(
-                            (assetName, asset, duration, userData) =>
-                            {
-                                Debug.Log("加载成功：" + fileName);
-
-                                var textAsset = asset as TextAsset;
-                                s_assetDatas.Add(fileName, textAsset.bytes);
-
-                                m_Loaded++;
-                                if (m_Loaded == Loadfiles.Count)
-                                {
-                                    LoadDllSuccess = true;
-                                }
-                            },
-                            (assetName, status, errorMessage, userData) =>
-                            {
-                                Debug.LogErrorFormat("Can not load file '{0}' from '{1}' with error message '{2}'.",
-                                    fileName,
-                                    assetName, errorMessage);
-                            }));
-                }
+                LoadDllSuccess = false;
+                LoadDlls();
             }
             else
             {
-                m_HotfixAssembly = Assembly.Load("Hotfix.Runtime");
-                LoadDllSuccess = true;
+                ChangeState<ProcedureGameEntry>(procedureOwner);
             }
         }
 
@@ -93,65 +80,56 @@ namespace StarForce
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
             if (LoadDllSuccess)
             {
-                LoadDllSuccess = false;
-
                 LoadMetadataForAOTAssemblies();
-                m_HotfixAssembly = Assembly.Load(GetAssetData("Hotfix.Runtime.dll"));
+                LoadHotfixAssembly();
 
-                if (null == m_HotfixAssembly)
-                {
-                    Debug.LogError("Hotfix logic assembly missing.");
-                    return;
-                }
-
-                StartGameEntry();
+                ChangeState<ProcedureGameEntry>(procedureOwner);
             }
         }
 
-        void StartGameEntry()
+        private void LoadDlls()
         {
-            GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixPrefab("GameEntry"), typeof(GameObject),
-                Constant.AssetPriority.DLLAsset,
-                new LoadAssetCallbacks(
-                    (assetName, asset, duration, userData) =>
+            var loadfiles = new List<string>();
+            loadfiles.AddRange(AotMetaAssemblyFiles);
+            loadfiles.AddRange(HotfixAssemblyFiles);
+            m_Loaded = 0;
+            foreach (var fileName in loadfiles)
+            {
+                GameEntryMain.Resource.LoadAsset(AssetUtility.GetHotfixAssembly(fileName), Constant.AssetPriority.DLLAsset,
+                    new LoadAssetCallbacks((assetName, asset, duration, userData) =>
                     {
-                        Debug.Log("加载成功：GameEntry");
-                        GameObject hotfixEntry = GameObject.Instantiate(asset as GameObject);
-                        hotfixEntry.transform.SetParent(GameEntryMain.Base.transform.parent);
-                    },
-                    (assetName, status, errorMessage, userData) =>
+                        Debug.Log("加载成功：" + fileName);
+
+                        var textAsset = asset as TextAsset;
+                        s_assetDatas.Add(fileName, textAsset.bytes);
+                        if (++m_Loaded == loadfiles.Count)
+                        {
+                            LoadDllSuccess = true;
+                        }
+                    }, (assetName, status, errorMessage, userData) =>
                     {
                         Debug.LogErrorFormat("Can not load file '{0}' from '{1}' with error message '{2}'.",
-                            assetName,
-                            assetName, errorMessage);
+                            fileName, assetName, errorMessage);
                     }));
+            }
         }
-
-        void StartGameEntry(Assembly assembly)
+        /// <summary>
+        /// 加载Hotfix程序集
+        /// </summary>
+        private void LoadHotfixAssembly()
         {
-            var appType = assembly.GetType("StarForce.GameEntry");
-            if (null == appType)
+            m_HotfixAssembly = Assembly.Load(GetAssetData("Hotfix.Runtime.dll"));
+            if (null == m_HotfixAssembly)
             {
-                Debug.LogError("Hotfix.dll type 'GameEntry' missing.");
-                return;
+                Debug.LogError("Hotfix logic assembly missing.");
             }
-
-            var entryMethod = appType.GetMethod("Start");
-            if (null == entryMethod)
-            {
-                Debug.LogError("StarForce.GameEntry method 'Start' missing.");
-                return;
-            }
-
-            object[] objects = { new object[] { new List<Assembly>() { m_HotfixAssembly } } };
-            entryMethod.Invoke(appType, objects);
         }
 
         /// <summary>
         /// 为aot assembly加载原始metadata， 这个代码放aot或者热更新都行。
         /// 一旦加载后，如果AOT泛型函数对应native实现不存在，则自动替换为解释模式执行
         /// </summary>
-        private static void LoadMetadataForAOTAssemblies()
+        private void LoadMetadataForAOTAssemblies()
         {
             /// 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。
             /// 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
@@ -166,3 +144,4 @@ namespace StarForce
         }
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if HybridCLR
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using HybridCLR.Editor;
@@ -68,3 +69,5 @@ public class HotfixGeneratorMenu : MonoBehaviour
         }
     }
 }
+
+#endif

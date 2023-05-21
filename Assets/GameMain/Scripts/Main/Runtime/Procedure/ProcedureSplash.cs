@@ -32,13 +32,13 @@ namespace StarForce
             {
                 // 编辑器模式
                 Log.Info("Editor resource mode detected.");
-                ChangeState<ProcedureLoadAssembly>(procedureOwner);
+                ChangeState<ProcedureGameEntry>(procedureOwner);
             }
             else if (GameEntryMain.Resource.ResourceMode == ResourceMode.Package)
             {
                 // 单机模式
                 Log.Info("Package resource mode detected.");
-                ChangeState<ProcedureLoadAssembly>(procedureOwner);
+                ChangeState<ProcedureInitResources>(procedureOwner);
             }
             else
             {

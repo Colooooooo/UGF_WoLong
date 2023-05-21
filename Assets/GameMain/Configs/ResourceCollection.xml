@@ -2,23 +2,23 @@
 <UnityGameFramework>
   <ResourceCollection>
     <Resources>
-      <Resource Name="Configs" FileSystem="GameData" LoadType="0" Packed="True" ResourceGroups="Base" />
-      <Resource Name="DataTables" FileSystem="GameData" LoadType="0" Packed="True" ResourceGroups="Base" />
-      <Resource Name="Entities" FileSystem="Resources" LoadType="0" Packed="True" />
-      <Resource Name="Fonts" FileSystem="UI" LoadType="0" Packed="True" ResourceGroups="Base" />
-      <Resource Name="Hotfix" LoadType="0" Packed="True" />
+      <Resource Name="Configs" FileSystem="GameData" LoadType="3" Packed="True" ResourceGroups="Base" />
+      <Resource Name="DataTables" FileSystem="GameData" LoadType="3" Packed="True" ResourceGroups="Base" />
+      <Resource Name="Entities" FileSystem="Resources" LoadType="3" Packed="True" />
+      <Resource Name="Fonts" FileSystem="UI" LoadType="3" Packed="True" ResourceGroups="Base" />
+      <Resource Name="Hotfix" LoadType="3" Packed="True" />
       <Resource Name="Localization/Dictionaries" Variant="en-us" FileSystem="UI" LoadType="0" Packed="True" ResourceGroups="Base" />
       <Resource Name="Localization/Dictionaries" Variant="ko-kr" FileSystem="UI" LoadType="0" Packed="True" ResourceGroups="Base" />
       <Resource Name="Localization/Dictionaries" Variant="zh-cn" FileSystem="UI" LoadType="0" Packed="True" ResourceGroups="Base" />
       <Resource Name="Localization/Dictionaries" Variant="zh-tw" FileSystem="UI" LoadType="0" Packed="True" ResourceGroups="Base" />
-      <Resource Name="Materials" FileSystem="Resources" LoadType="0" Packed="True" />
-      <Resource Name="Meshes" FileSystem="Resources" LoadType="0" Packed="True" />
+      <Resource Name="Materials" FileSystem="Resources" LoadType="3" Packed="True" />
+      <Resource Name="Meshes" FileSystem="Resources" LoadType="3" Packed="True" />
       <Resource Name="Music/About" FileSystem="Resources" LoadType="0" Packed="True" ResourceGroups="Music" />
       <Resource Name="Music/Background" FileSystem="Resources" LoadType="0" Packed="True" ResourceGroups="Music" />
       <Resource Name="Music/Menu" FileSystem="Resources" LoadType="0" Packed="True" ResourceGroups="Music" />
-      <Resource Name="Scenes" FileSystem="Resources" LoadType="0" Packed="True" />
-      <Resource Name="Sounds" FileSystem="Resources" LoadType="0" Packed="True" />
-      <Resource Name="Textures" FileSystem="Resources" LoadType="0" Packed="True" />
+      <Resource Name="Scenes" FileSystem="Resources" LoadType="3" Packed="True" />
+      <Resource Name="Sounds" FileSystem="Resources" LoadType="3" Packed="True" />
+      <Resource Name="Textures" FileSystem="Resources" LoadType="3" Packed="True" />
       <Resource Name="UI/UIForms" FileSystem="UI" LoadType="0" Packed="True" />
       <Resource Name="UI/UISounds" FileSystem="UI" LoadType="0" Packed="True" />
       <Resource Name="UI/UISprites/Common" FileSystem="UI" LoadType="0" Packed="True" />
